@@ -1,0 +1,28 @@
+server:
+  port: 8080
+
+spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
+  datasource:
+    username: ${Postgres_USERNAME}
+    password: ${Postgres_PASSWORD}
+    url: jdbc:postgresql://localhost:5432/train_accounting
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: create
+    show-sql: true
+    open-in-view: true
+  logging:
+    level:
+      org.hibernate.SQL: info
+
+swagger:
+  enabled: true
+  title: My API
+  description: API documentation for My Application
+  version: 1.0
