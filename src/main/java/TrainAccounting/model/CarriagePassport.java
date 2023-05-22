@@ -56,6 +56,12 @@ public class CarriagePassport {
         this.stationPath = stationPath;
     }
 
+    public CarriagePassport(Long id, int number, int sequenceNumber) {
+        this.id = id;
+        this.number = number;
+        this.sequenceNumber = sequenceNumber;
+    }
+
     public CarriagePassport() {
     }
 }

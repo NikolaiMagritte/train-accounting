@@ -25,6 +25,19 @@ public class Station {
         this.name = name;
     }
 
+    public Station(Long id) {
+        this.id = id;
+    }
+
+    public Station(List<StationPath> stationPaths) {
+        this.stationPaths = stationPaths;
+    }
+
+    public Station(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+
     public Station() {
     }
 }

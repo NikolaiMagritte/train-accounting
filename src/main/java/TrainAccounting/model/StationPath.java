@@ -32,4 +32,15 @@ public class StationPath {
 
     public StationPath() {
     }
+
+    public StationPath(Long id, String name, Station station, List<CarriagePassport> carriages) {
+        this.id = id;
+        this.name = name;
+        this.station = station;
+        this.carriages = carriages;
+    }
+
+    public StationPath(Long id) {
+        this.id = id;
+    }
 }

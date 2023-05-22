@@ -62,8 +62,10 @@ public class RearrangeCarriagesServiceImpl implements RearrangeCarriagesService 
 
         int lastSequenceNumber = existingCarriages.isEmpty() ? 0 : existingCarriages.get(existingCarriages.size() - 1).getSequenceNumber();
 
-        for (CarriagePassport carriage : carriages) {
-            carriage.setSequenceNumber(lastSequenceNumber + 1);
+        for (int i = 0; i < carriages.size(); i++) {
+            CarriagePassport carriage = carriages.get(i);
+            int sequenceNumber = lastSequenceNumber + 1 + i;
+            carriage.setSequenceNumber(sequenceNumber);
             carriage.setStationPath(existingDestinationPath);
             carriagePassportRepository.save(carriage);
             existingDestinationPath.getCarriages().add(carriage);
