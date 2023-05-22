@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/accounting")
 public class AccountingController {
     private final AcceptCarriagesService acceptCarriagesService;
     private final RearrangeCarriagesService rearrangeCarriagesService;
@@ -24,14 +24,15 @@ public class AccountingController {
     private final StationRepository stationRepository;
     private final StationPathRepository stationPathRepository;
 
-
     @PostMapping("/accept")
     public ResponseEntity<String> acceptCarriages(@RequestBody List<CarriagePassport> carriages,
                                                   @RequestParam Long stationId,
                                                   @RequestParam Long stationPathId) {
         try {
-            Station station = stationRepository.findById(stationId).get();
-            StationPath stationPath = stationPathRepository.findById(stationPathId).get();
+            Station station = stationRepository.findById(stationId)
+                    .orElseThrow(() -> new IllegalArgumentException("Station not found"));
+            StationPath stationPath = stationPathRepository.findById(stationPathId)
+                    .orElseThrow(() -> new IllegalArgumentException("Station path not found"));
 
             acceptCarriagesService.acceptCarriages(carriages, station, stationPath);
 
@@ -47,9 +48,12 @@ public class AccountingController {
                                                      @RequestParam Long sourcePathId,
                                                      @RequestParam Long destinationPathId) {
         try {
-            Station station = stationRepository.findById(stationId).get();
-            StationPath sourcePath = stationPathRepository.findById(sourcePathId).get();
-            StationPath destinationPath = stationPathRepository.findById(destinationPathId).get();
+            Station station = stationRepository.findById(stationId)
+                    .orElseThrow(() -> new IllegalArgumentException("Station not found"));
+            StationPath sourcePath = stationPathRepository.findById(sourcePathId)
+                    .orElseThrow(() -> new IllegalArgumentException("Source station path not found"));
+            StationPath destinationPath = stationPathRepository.findById(destinationPathId)
+                    .orElseThrow(() -> new IllegalArgumentException("Destination station path not found"));
 
             rearrangeCarriagesService.rearrangeCarriages(carriages, station, sourcePath, destinationPath);
 
@@ -64,8 +68,10 @@ public class AccountingController {
                                                   @RequestParam Long stationId,
                                                   @RequestParam Long stationPathId) {
         try {
-            Station station = stationRepository.findById(stationId).get();
-            StationPath stationPath = stationPathRepository.findById(stationPathId).get();
+            Station station = stationRepository.findById(stationId)
+                    .orElseThrow(() -> new IllegalArgumentException("Station not found"));
+            StationPath stationPath = stationPathRepository.findById(stationPathId)
+                    .orElseThrow(() -> new IllegalArgumentException("Station path not found"));
 
             departCarriagesService.departCarriages(carriages, station, stationPath);
 
@@ -75,3 +81,4 @@ public class AccountingController {
         }
     }
 }
+

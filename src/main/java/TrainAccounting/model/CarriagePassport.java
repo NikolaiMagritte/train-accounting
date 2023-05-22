@@ -21,10 +21,10 @@ public class CarriagePassport {
     @Column(name = "carriage_type", nullable = false)
     private CarriageType carriageType;
 
-    @Column(name = "carriage_weight", nullable = false)
+    @Column(name = "carriage_weight")
     private double carriageWeight;
 
-    @Column(name = "cargo_weight")
+    @Column(name = "cargo_weight", nullable = false)
     private double cargoWeight;
 
     @Column(name = "cargo_capacity", nullable = false)

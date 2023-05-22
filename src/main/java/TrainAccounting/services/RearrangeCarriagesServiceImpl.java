@@ -9,34 +9,51 @@ import TrainAccounting.repositories.StationPathRepository;
 import TrainAccounting.repositories.StationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class RearrangeCarriagesServiceImpl implements RearrangeCarriagesService {
+    private static final Logger logger = LoggerFactory.getLogger(RearrangeCarriagesServiceImpl.class);
+
     private final CarriagePassportRepository carriagePassportRepository;
     private final StationRepository stationRepository;
     private final StationPathRepository stationPathRepository;
-
 
     @Override
     public void rearrangeCarriages(List<CarriagePassport> carriages, Station station,
                                    StationPath sourcePath, StationPath destinationPath) {
         Station existingStation = stationRepository.findById(station.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Station not found"));
+                .orElseThrow(() -> {
+                    String errorMessage = "Station not found";
+                    logger.error(errorMessage);
+                    return new IllegalArgumentException(errorMessage);
+                });
+
         StationPath existingSourcePath = stationPathRepository.findById(sourcePath.getId())
-                .orElseThrow(() -> new IllegalArgumentException("StationPath not found"));
+                .orElseThrow(() -> {
+                    String errorMessage = "Source StationPath not found";
+                    logger.error(errorMessage);
+                    return new IllegalArgumentException(errorMessage);
+                });
+
         StationPath existingDestinationPath = stationPathRepository.findById(destinationPath.getId())
-                .orElseThrow(() -> new IllegalArgumentException("StationPath not found"));
+                .orElseThrow(() -> {
+                    String errorMessage = "Destination StationPath not found";
+                    logger.error(errorMessage);
+                    return new IllegalArgumentException(errorMessage);
+                });
 
         if (!existingSourcePath.getStation().equals(existingStation)
                 || !existingDestinationPath.getStation().equals(existingStation)) {
-            throw new IllegalArgumentException("StationPath does not belong to the Station");
+            String errorMessage = "StationPath does not belong to the Station";
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
-        // Удаляем вагоны с текущего пути
         List<CarriagePassport> existingSourceCarriages = existingSourcePath.getCarriages();
         existingSourceCarriages.removeAll(carriages);
         stationPathRepository.save(existingSourcePath);
@@ -53,5 +70,9 @@ public class RearrangeCarriagesServiceImpl implements RearrangeCarriagesService 
         }
 
         stationPathRepository.save(existingDestinationPath);
+
+        logger.info("Carriages rearranged: {}", carriages);
+        logger.info("Carriages moved from source path: {} to destination path: {}", sourcePath.getId(), destinationPath.getId());
     }
 }
+

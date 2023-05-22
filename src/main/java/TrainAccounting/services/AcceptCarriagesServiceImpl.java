@@ -9,14 +9,19 @@ import TrainAccounting.repositories.CarriageReceiptRepository;
 import TrainAccounting.repositories.StationPathRepository;
 import TrainAccounting.repositories.StationRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
 @RequiredArgsConstructor
 @Service
-public class AcceptCarriragesServiceImpl implements AcceptCarriagesService{
+public class AcceptCarriagesServiceImpl implements AcceptCarriagesService {
+    private static final Logger logger = LoggerFactory.getLogger(AcceptCarriagesServiceImpl.class);
+
     private final CarriagePassportRepository carriagePassportRepository;
     private final StationRepository stationRepository;
     private final StationPathRepository stationPathRepository;
@@ -25,18 +30,28 @@ public class AcceptCarriragesServiceImpl implements AcceptCarriagesService{
     @Override
     public void acceptCarriages(List<CarriagePassport> carriages, Station station, StationPath stationPath) {
         Station existingStation = stationRepository.findById(station.getId())
-                .orElseThrow(() -> new IllegalArgumentException("Station not found"));
+                .orElseThrow(() -> {
+                    String errorMessage = "Station not found";
+                    logger.error(errorMessage);
+                    return new IllegalArgumentException(errorMessage);
+                });
+
         StationPath existingPath = stationPathRepository.findById(stationPath.getId())
-                .orElseThrow(() -> new IllegalArgumentException("StationPath not found"));
+                .orElseThrow(() -> {
+                    String errorMessage = "StationPath not found";
+                    logger.error(errorMessage);
+                    return new IllegalArgumentException(errorMessage);
+                });
 
         if (!existingPath.getStation().equals(existingStation)) {
-            throw new IllegalArgumentException("Station path does not belong to the Station");
+            String errorMessage = "Station path does not belong to the Station";
+            logger.error(errorMessage);
+            throw new IllegalArgumentException(errorMessage);
         }
 
         List<CarriagePassport> existingCarriages = existingPath.getCarriages();
 
         int lastSequenceNumber = existingCarriages.isEmpty() ? 0 : existingCarriages.get(existingCarriages.size() - 1).getSequenceNumber();
-
 
         List<CarriagePassport> acceptedCarriages = new ArrayList<>();
 
@@ -52,5 +67,9 @@ public class AcceptCarriragesServiceImpl implements AcceptCarriagesService{
         carriageReceiptRepository.save(carriageReceipt);
 
         stationPathRepository.save(existingPath);
+
+        logger.info("Accepted carriages: {}", acceptedCarriages);
+        logger.info("Carriages accepted successfully for station: {}", existingStation.getName());
     }
 }
+
